@@ -1,14 +1,13 @@
-require 'copyist'
-require 'net/http'
-require 'json'
-require 'dotenv'
-
 module Copyist
   class Job
-    IssueTicket = Struct.new(:title, :description)
+    IssueTicket = Struct.new(:title, :description, :labels)
 
-    def initialize(file)
-      Dotenv.load
+    # FIXME: ここでENV読み分けてるの微妙な気がしてる. が、設定ファイル切り替えやすいというメリットもある？
+    def initialize(file, env = '.env')
+      Dotenv.load(env)
+      raise 'set GITHUB_USER_NAME and GITHUB_REPO_NAME to .env file' if (ENV['GITHUB_USER_NAME'].empty? || ENV['GITHUB_REPO_NAME'].empty?)
+      raise 'set TITLE_IDENTIFIRE to .env file' if ENV['TITLE_IDENTIFIRE'].empty?
+
       @file = file
     end
 
@@ -24,21 +23,43 @@ module Copyist
       puts ['fatal error.', '-------', e.backtrace, '------'].flatten.join("\n")
     end
 
-    private
-
     def tickets_from_markdown
       tickets = []
       get_markdown.each do |line|
-        case
-        when line[0..1] == '# '  then next
-        when line[0..2] == '## ' then next
-        when line[0..2] == '###' then tickets << IssueTicket.new(line.gsub("###", ''), [])
-        else tickets.last.description << line
+        next if skip_identifires && line.match?(skip_identifires)
+
+        if line.match?(/^#{title_identifire}/)
+          tickets << IssueTicket.new(line.gsub(title_identifire, ''), [], [])
+
+        elsif label_identifire && line.match?(/^#{label_identifire}/)
+          (tickets&.last&.labels || []) << line.gsub(label_identifire, '').chomp.split(',').map(&:strip)
+
+        else
+          (tickets&.last&.description || []) << line
         end
       end
 
       tickets.each{ |i| i.description = i.description.join }
       tickets
+    end
+
+    private
+
+    # FIXME: 定数にするとテストがうまくいかなかったのでメソッドにした
+    def title_identifire
+      "#{ENV['TITLE_IDENTIFIRE']} "
+    end
+
+    def skip_identifires
+      return nil if ENV['SKIP_IDENTIFIRES'].size.zero?
+
+      Regexp.new("^#{ENV['SKIP_IDENTIFIRES'].split(',').join(' |')}")
+    end
+
+    def label_identifire
+      return nil if ENV['LABEL_IDENTIFIRE'].size.zero?
+
+      "#{ENV['LABEL_IDENTIFIRE']} "
     end
 
     def request_to_github(ticket)
@@ -56,7 +77,7 @@ module Copyist
       {
         title:  ticket.title,
         body:   ticket.description,
-        labels: ENV['LABELS']&.split(',')
+        labels: (ENV['GLOBAL_LABELS']&.split(',')&.map(&:strip) + ticket.labels).flatten.uniq
       }
     end
 
