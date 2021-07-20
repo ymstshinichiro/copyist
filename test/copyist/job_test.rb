@@ -9,7 +9,7 @@ module Copyist
 
     def test_that_it_returns_markdown
       markdown = <<~"DOC"
-        # level1
+        # **level1** *hoge* `fuga`
         ## level2
         ##### hoge - this line skip
         labels: frontend,backend
@@ -25,7 +25,7 @@ module Copyist
       target.stub(:get_markdown, markdown.scan(/.*\n/)) {
         result = target.tickets_from_markdown
 
-        assert result.first.title == "level1\n"
+        assert result.first.title == "level1 hoge fuga\n"
 
         assert result.first.description == <<~"RESULT"
         ## level2

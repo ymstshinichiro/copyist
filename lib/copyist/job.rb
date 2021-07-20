@@ -38,7 +38,7 @@ module Copyist
         next if skip_identifires && line.match?(skip_identifires)
 
         if line.match?(/^#{title_identifire}/)
-          tickets << IssueTicket.new(line.gsub(title_identifire, ''), [], [])
+          tickets << IssueTicket.new(line.gsub(/#{title_identifire}|\*|\*\*|`/, ''), [], [])
 
         elsif label_identifire && line.match?(/^#{label_identifire}/)
           (tickets&.last&.labels || []) << line.gsub(label_identifire, '').chomp.split(',').map(&:strip)
