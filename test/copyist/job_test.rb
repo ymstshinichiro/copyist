@@ -7,11 +7,6 @@ module Copyist
     FILE_STUB = 'path/to/file'
     ENV_FILE = '.env.test'
 
-    def test_that_it_has_a_file
-      assert Copyist::Job.new(FILE_STUB, ENV_FILE).instance_variables.include?(:@file)
-    end
-
-
     def test_that_it_returns_markdown
       markdown = <<~"DOC"
         # level1
@@ -27,7 +22,7 @@ module Copyist
 
       target = Copyist::Job.new(FILE_STUB, ENV_FILE)
 
-      target.stub(:get_markdown, markdown.scan(/.*\n/)) do
+      target.stub(:get_markdown, markdown.scan(/.*\n/)) {
         result = target.tickets_from_markdown
 
         assert result.first.title == "level1\n"
@@ -40,8 +35,8 @@ module Copyist
         - fizzbazz
         RESULT
 
-        assert result.first.labels == ['frontend', 'backend']
-      end
+        assert result.first.labels.flatten == ['frontend', 'backend']
+      }
     end
   end
 end
