@@ -33,7 +33,7 @@ example
 1. `$ bundle exec exe/copyist job path/to/markdown_file.md`
 
 
-## Required or Optional Settings
+## Required or Optional Settings (to ENV or .env)
 #### TITLE_IDENTIFIRE (requires)
 An identifier to determine which line to use as the title of the ticket.
 Determine if it matches the beginning of a line.
@@ -92,6 +92,16 @@ not match -> 'labels:labelA,labelB'  -> No label will be set on the ticket.
 Specify the label to be set for all tickets.
 Enter a comma-separated list of labels to be set on the line to be judged.
 You can specify multiple values separated by commas.
+
+#### ENVFILE_PATH
+ENV-related settings can be specified in a file.
+Enter the path in the environment variable ENVFILE_PATH.
+
+
+example)
+```
+$ export ENVFILE_PATH=.env
+```
 
 
 ## Development
