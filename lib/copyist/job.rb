@@ -4,11 +4,12 @@ module Copyist
 
     attr_accessor :title_identifire, :skip_identifires, :label_identifire, :global_labels, :template_file_path
 
-    # FIXME: ここでENV読み分けてるの微妙な気がしてる. が、設定ファイル切り替えやすいというメリットもある？
-    def initialize(argv, env = '.env')
+    def initialize(argv)
       @source_md_file_path = argv
 
-      Dotenv.load(env)
+      env_path = ENV['ENVFILE_PATH']
+      Dotenv.load(env_path) if env_path && !env_path.empty?
+
       raise 'set GITHUB_USER_NAME and GITHUB_REPO_NAME to .env file' if (ENV['GITHUB_USER_NAME'].empty? || ENV['GITHUB_REPO_NAME'].empty?)
       raise 'set TITLE_IDENTIFIRE to .env file' if ENV['TITLE_IDENTIFIRE'].empty?
 

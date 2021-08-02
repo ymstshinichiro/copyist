@@ -5,9 +5,9 @@ require_relative "../test_helper"
 module Copyist
   class JobTest < Minitest::Test
     FILE_STUB = 'path/to/file'
-    ENV_FILE = '.env.test'
 
     def test_that_it_returns_markdown
+      ENV['ENVFILE_PATH'] = '.env.test'
       markdown = <<~"DOC"
         # **level1** *hoge* `fuga`
         ## level2
@@ -20,7 +20,7 @@ module Copyist
         skip_line: aaa
         DOC
 
-      target = Copyist::Job.new(FILE_STUB, ENV_FILE)
+      target = Copyist::Job.new(FILE_STUB)
 
       target.stub(:get_markdown, markdown.scan(/.*\n/)) {
         result = target.tickets_from_markdown
