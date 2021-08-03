@@ -3,11 +3,9 @@ This application is a tool that can parse a file written in markdown and generat
 
 The word 'Copyist' means 'Hikko (筆耕)' in Japanese.
 
-## Installation
-
-1. clone this repository
-1. `$ bundle install`
 ## How to use
+### step0. Installation
+- `$ gem install copyist`
 
 ### step1. set ENV
 - set your github personal token to GITHUB_PERSONAL_TOKEN
@@ -30,7 +28,7 @@ example
 ```
 
 ### step3. run copyist
-1. `$ bundle exec exe/copyist job path/to/markdown_file.md`
+1. `$ copyist job path/to/markdown_file.md`
 
 
 ## Required or Optional Settings (to ENV or .env)
