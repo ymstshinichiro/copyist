@@ -1,5 +1,8 @@
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 3.0
+  Exclude:
+    - 'test/**/*.rb'
+    - 'test/*.rb'
 
 Style/StringLiterals:
   Enabled: true
@@ -11,3 +14,7 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+# TODO: consider tightening the rule (default: 10)
+Metrics/MethodLength:
+  Max: 25

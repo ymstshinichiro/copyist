@@ -41,6 +41,7 @@ DEPENDENCIES
   minitest (~> 5.0)
   rake (~> 13.0)
   rubocop (~> 1.7)
+  rubocop-ast
 
 BUNDLED WITH
    2.2.16

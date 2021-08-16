@@ -101,6 +101,14 @@ example)
 $ export ENVFILE_PATH=.env
 ```
 
+## Experimental Feature
+Implemented a feature to generate JIRA child issues.
+(Because the team I belong to switched from GIthub to JIRA)
+
+By setting the `JIRA_PARENT_PROJECT_IDENTIFIRE` key to the prepared markdown, you can create a ticket for a child issue that is connected to an already existing parent issue.
+
+Please check the implementation for details.
+
 
 ## Development
 
