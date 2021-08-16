@@ -3,13 +3,15 @@
 require_relative "../test_helper"
 
 module Copyist
-  class JobTest < Minitest::Test
+  class JiraTest < Minitest::Test
     FILE_STUB = "path/to/file"
 
-    def test_that_it_returns_markdown
+    def test_that_it_returns_tickets_from_markdown
       ENV["ENVFILE_PATH"] = ".env.test"
+
       markdown = <<~"DOC"
         # **level1** *hoge* `fuga`
+         parent: PROJECT-123
         ## level2
         ##### hoge - this line skip
         labels: frontend,backend
@@ -20,14 +22,16 @@ module Copyist
         skip_line: aaa
       DOC
 
-      target = Copyist::Job.new(FILE_STUB)
+      Tempfile.create("foo") do |f|
+        f.write(markdown)
+        f.rewind
 
-      target.stub(:get_markdown, markdown.scan(/.*\n/)) do
+        target = Copyist::Jira.new(f.path)
         result = target.tickets_from_markdown
 
-        assert result.first.title == "level1 hoge fuga\n"
+        assert result.first.title == "level1 hoge fuga"
 
-        assert result.first.description == <<~"RESULT"
+        assert result.first.description == <<~RESULT.chomp
           ## level2
           ### foo
           - fizz
@@ -36,6 +40,8 @@ module Copyist
         RESULT
 
         assert result.first.labels.flatten == %w[frontend backend]
+
+        assert result.first.parent == "PROJECT-123"
       end
     end
   end
